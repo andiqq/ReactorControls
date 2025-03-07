@@ -7,42 +7,38 @@ internal class HomePageState
 
     public double StepperValue { get; set; }
     public double SliderValue { get; set; }
-    public int SelectedBirdIndex { get; set; } 
-    public string BirdsText { get; set; }
-
+    public int SelectedBirdIndex { get; set; } = -1;
+    public string BirdsText { get; set; } = string.Empty;
 }
 
 internal class HomePage : Component<HomePageState>
 {
-    private List<string> birds = ["Duck", "Pigeon", "Penguin", "Ostrich", "Owl"];
-    
+    private readonly List<string> _birds = ["Duck", "Pigeon", "Penguin", "Ostrich", "Owl"];
+
+    private MauiControls.Picker myPicker = new();
+
     public override VisualNode Render()
         => ContentPage(
             ScrollView(
                 VStack(
                         Entry()
                             .Placeholder("Enter some text")
-                            .FontSize(22)
                             // .OnTextChanged((_, e) => SetState(s => s.EnteredText = e.NewTextValue))
                             .OnTextChanged(value => SetState(s => s.EnteredText = value))
                             .Set(SemanticProperties.HintProperty, "Lets you enter some text"),
                         Label(State.EnteredText)
                             .Set(SemanticProperties.HintProperty, "Here's what you typed")
-                            .BackgroundColor(Colors.Gold)
-                            .FontSize(28),
+                            .BackgroundColor(Colors.Gold),
                         Stepper()
                             .Minimum(0)
                             .Maximum(10)
-                            .VCenter()
                             .Increment(1)
                             .OnValueChanged((_, e) => SetState(s => s.StepperValue = e.NewValue)),
                         Label("Here's the Stepper value:")
-                            .FontSize(24)
                             .Set(SemanticProperties.DescriptionProperty,
                                 "The number the user chose with the Stepper"),
                         Label(State.StepperValue)
                             .BackgroundColor(Colors.LightBlue)
-                            .FontSize(28)
                             .Set(SemanticProperties.DescriptionProperty,
                                 "The number the user chose with the Stepper"),
                         Slider()
@@ -50,35 +46,29 @@ internal class HomePage : Component<HomePageState>
                             .Maximum(1)
                             .OnValueChanged((_, e) => SetState(s => s.SliderValue = e.NewValue)),
                         Label("Here's the Slider value:")
-                            .FontSize(24)
-                            .VCenter()
                             .Set(SemanticProperties.DescriptionProperty,
                                 "The number the user chose with the Slider"),
                         Label(State.SliderValue)
                             .BackgroundColor(Colors.LightBlue)
-                            .FontSize(28)
-                            .VCenter()
                             .Set(SemanticProperties.DescriptionProperty,
                                 "The number the user chose with the Slider"),
-                        HStack(
-                            Picker()
-                                .FontSize(28)
-                                .Title("Pick a bird")
-                                .SelectedIndex(State.SelectedBirdIndex)
-                                .OnSelectedIndexChanged(index => SetState(s => s.SelectedBirdIndex = index))
-                                .ItemsSource(birds),
-                            VStack(
-                                Label(State.BirdsText)
-                            )
-                        ),
+                        Picker()
+                            .Title("Pick a bird")
+                            .OnSelectedIndexChanged(index => SetState(s => s.SelectedBirdIndex = index))
+                            .ItemsSource(_birds),
                         Button("Add a bird")
-                            .FontSize(28)
-                            .OnClicked(() => SetState(s => s.BirdsText += Environment.NewLine + birds[s.SelectedBirdIndex]))
+                            .OnClicked(() => SetState(s =>
+                            {
+                                s.BirdsText += Environment.NewLine + _birds[s.SelectedBirdIndex];
+                                s.SelectedBirdIndex = -1;
+                            })),
+                        VStack(
+                            Label(State.BirdsText)
+                        )
                     )
                     .VCenter()
                     .Spacing(25)
                     .Padding(30, 0)
             )
         );
-    
 }
