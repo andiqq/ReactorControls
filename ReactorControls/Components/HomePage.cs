@@ -47,18 +47,19 @@ internal class HomePage : Component<HomePageState>
                             .BackgroundColor(Colors.LightBlue)
                             .Set(SemanticProperties.DescriptionProperty,
                                 "The number the user chose with the Slider"),
+                        Label("Select a bird:")
+                            .Set(SemanticProperties.DescriptionProperty,
+                                "The picker to select some birds"),
                         Picker()
-                            .Title("Pick a bird")
+                            .Title(DeviceInfo.Platform == DevicePlatform.MacCatalyst ? string.Empty : "Select a Bird:")
                             .OnSelectedIndexChanged(index => SetState(s => s.SelectedBirdIndex = index))
                             .ItemsSource(_birds),
                         Button("Add a bird")
                             .OnClicked(() => SetState(s =>
                             {
-                                if (!string.IsNullOrEmpty(s.BirdsText))
-                                {
-                                    s.BirdsText += Environment.NewLine;
-                                }
-                                s.BirdsText += _birds[s.SelectedBirdIndex];
+                                s.BirdsText += string.IsNullOrEmpty(s.BirdsText)
+                                    ? string.Empty
+                                    : Environment.NewLine + _birds[s.SelectedBirdIndex];
                             })),
                         Label("Here are the selected birds:"),
                         Label(State.BirdsText)
